@@ -1,121 +1,131 @@
-import { Link, useNavigate, useOutletContext } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useForm } from "../context/FormContext";
 
 export const Page2 = () => {
-  const { formData, handleChange } = useOutletContext();
+  const { formData, handleChange } = useForm();
 
   const navigate = useNavigate();
 
-  const handleNavigate = () => {
-    navigate(-1);
-  };
   const handleSubmit = (e) => {
     e.preventDefault();
     navigate("../page3");
   };
   return (
-    <div className="w-full h-screen bg-gray-500 p-4">
-      {/* Full-width range slider */}
-      <input
-        type="range"
-        min="1"
-        max="3"
-        Value="2"
-        readOnly
-        className="w-full mb-6"
-      />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-indigo-50 to-rose-50 p-6">
+      <div className="w-full sm:w-[70%] lg:w-[40%] bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8">
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Form column */}
+          <div className="flex-1">
+            <h1 className="text-3xl font-extrabold mb-6 text-center text-slate-900">
+              Step 2: <span className="text-indigo-600">Personal Details</span>
+            </h1>
+            <p className="text-sm text-slate-600 mb-4 flex justify-center">
+              A few personal details to help us personalize your experience.
+            </p>
 
-      {/* Centered Form Card */}
-      <div className="w-full bg-white rounded-xl shadow-2xl flex justify-center items-center m-auto p-6 sm:w-[60%] lg:w-[40%]">
-        <div className="w-full">
-          <h1 className="text-2xl font-bold mb-1 text-center">
-            Tell Us About Yourself
-          </h1>
-          <h1 className="text-md  mb-5 text-center">
-            (Start with the basics — this helps us personalize your experience.)
-          </h1>
+            {/* Progress bar */}
+            <div className="w-full mb-8">
+              <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                <div className="h-2 bg-gradient-to-r from-indigo-500 to-sky-400 w-2/3"></div>
+              </div>
+              <p className="text-xs text-slate-500 mt-2 text-center">
+                Step 2 of 3
+              </p>
+            </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {/* Gender */}
-            <div className="flex flex-col">
-              <span className="mb-1 font-medium">Gender:</span>
-
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="male"
-                    required // put required on ONE radio in the group
-                    checked={formData.gender === "male"}
-                    onChange={handleChange}
-                  />
-                  Male
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              {/* Gender */}
+              <div className="flex flex-col">
+                <label className="mb-2 font-medium text-slate-700">
+                  Gender
                 </label>
+                <div className="flex flex-wrap gap-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="male"
+                      required
+                      checked={formData.gender === "male"}
+                      onChange={handleChange}
+                      className="accent-indigo-600 h-4 w-4"
+                    />
+                    <span className="text-slate-700">Male</span>
+                  </label>
 
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="female"
-                    checked={formData.gender === "female"}
-                    onChange={handleChange}
-                  />
-                  Female
-                </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="female"
+                      checked={formData.gender === "female"}
+                      onChange={handleChange}
+                      className="accent-indigo-600 h-4 w-4"
+                    />
+                    <span className="text-slate-700">Female</span>
+                  </label>
 
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="other"
-                    checked={formData.gender === "other"}
-                    onChange={handleChange}
-                  />
-                  Other
-                </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="other"
+                      checked={formData.gender === "other"}
+                      onChange={handleChange}
+                      className="accent-indigo-600 h-4 w-4"
+                    />
+                    <span className="text-slate-700">Other</span>
+                  </label>
+                </div>
+                <p className="text-xs text-slate-500 mt-2">
+                  Please choose one option.
+                </p>
               </div>
 
-              <p className="text-sm text-gray-500 mt-1">
-                Please choose one option.
-              </p>
-            </div>
+              {/* About */}
+              <div className="flex flex-col">
+                <label
+                  htmlFor="about"
+                  className="mb-2 font-medium text-slate-700"
+                >
+                  About
+                </label>
+                <textarea
+                  name="about"
+                  id="about"
+                  placeholder="Tell us about your background, interests or goals..."
+                  value={formData.about}
+                  onChange={handleChange}
+                  rows={5}
+                  required
+                  className="resize-y border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm placeholder:text-slate-400"
+                />
+                <p className="text-xs text-slate-500 mt-2">
+                  Share a short bio — this helps us personalize recommendations.
+                </p>
+              </div>
 
-            {/* About */}
-            <div className="flex flex-col">
-              <label htmlFor="about" className="mb-1 font-medium">
-                About:
-              </label>
-              <textarea
-                name="about"
-                id="about"
-                placeholder="Write something about yourself..."
-                required
-                onChange={handleChange}
-                value={formData.about}
-                rows={4} // controls height
-                className="border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400 resize-none"
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                You can share your background, interests, or goals here.
-              </p>
-            </div>
+              {/* Buttons */}
+              <div className="flex justify-between items-center mt-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigate(-1);
+                  }}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 text-slate-700 hover:bg-slate-50 transition"
+                >
+                  ← Previous
+                </button>
 
-            <div className="flex justify-between mt-8 ">
-              <button
-                className="p-3 bg-blue-600 rounded-2xl text-white hover:bg-blue-700"
-                onClick={handleNavigate}
-              >
-                Previous
-              </button>
-
-              <button
-                type="submit"
-                className="p-3 bg-blue-600 rounded-2xl text-white hover:bg-blue-700"
-              >
-                Next
-              </button>
-            </div>
-          </form>
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-sky-500 text-white font-semibold shadow-lg hover:-translate-y-0.5 active:scale-95 transition transform"
+                >
+                  Next →
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
