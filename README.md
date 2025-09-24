@@ -17,6 +17,10 @@ It is a multi-step registration form built with React, where users can enter the
 
 👤 Profile Summary Page to review & edit before submission
 
+## 🎥 Demo Video
+
+[![Watch the demo](./public/video.mp4)]
+
 🛠️ Tech Stack
 
 React.js
@@ -28,3 +32,5 @@ Context API
 Axios (for API calls)
 
 # TailwindCSS (for UI)
+
+> > > > > > > d4ef3f9a6ad1b7d54d8a3fbf0ae0f221a9c8e642
