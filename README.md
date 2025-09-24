@@ -1,12 +1,37 @@
-# React + Vite
+<<<<<<< HEAD
+📝 Multi-Step Registration Form
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is my first internship task as a Web Developer.
+It is a multi-step registration form built with React, where users can enter their details step by step, review them, and finally submit.
 
-Currently, two official plugins are available:
+🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+📍 Multi-step navigation using React Router
 
-## Expanding the ESLint configuration
+🗂 Context API for global state management
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+🗃 LocalStorage persistence (progress remains saved even after refresh)
+
+🌍 Dynamic country & city dropdowns (fetched from an API)
+
+✅ Validations using regex, conditional fields, and error handling
+
+👤 Profile Summary Page to review & edit before submission
+
+## 🎥 Demo Video
+
+[![Watch the demo](./public/video.mp4)]
+
+🛠️ Tech Stack
+
+React.js
+
+React Router
+
+Context API
+
+Axios (for API calls)
+
+# TailwindCSS (for UI)
+
+> > > > > > > d4ef3f9a6ad1b7d54d8a3fbf0ae0f221a9c8e642
