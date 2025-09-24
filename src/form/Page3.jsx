@@ -38,11 +38,6 @@ export const Page3 = () => {
   useEffect(() => {
     if (!formData.country) return;
 
-    setFormData((prev) => ({
-      ...prev,
-      city: "",
-    }));
-
     const fetchCity = async () => {
       try {
         const data = await getCityData(formData.country);
