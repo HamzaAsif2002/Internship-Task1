@@ -4,7 +4,7 @@ import { getCityData, getCountryData } from "../services/handleApi";
 import { useForm } from "../context/FormContext";
 
 export const Page3 = () => {
-  const { formData, handleChange } = useForm();
+  const { formData, handleChange, setFormData } = useForm();
 
   // For navigation
   const navigate = useNavigate();
@@ -37,6 +37,11 @@ export const Page3 = () => {
 
   useEffect(() => {
     if (!formData.country) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      city: "",
+    }));
 
     const fetchCity = async () => {
       try {
