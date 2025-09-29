@@ -41,19 +41,12 @@ export const Home = () => {
               </li>
             </ul>
 
-            <div className="mt-8 flex items-center gap-4">
+            <div className="mt-8 ">
               <button
                 onClick={() => navigate("/page1")}
                 className=" px-6 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-sky-500 text-white font-semibold shadow-lg transform transition hover:-translate-y-1 hover:scale-[1.01] active:scale-95 focus:outline-none focus:ring-4 focus:ring-indigo-200"
               >
                 Start Registration
-              </button>
-
-              <button
-                onClick={() => navigate("/previewform")}
-                className="px-4 py-2 rounded-full border border-slate-200 text-slate-700 hover:bg-slate-50 transition"
-              >
-                Preview
               </button>
             </div>
 
