@@ -82,7 +82,7 @@ export const Page1 = () => {
           <p className="text-xs text-slate-500 mt-2 text-center">Step 1 of 3</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="flex flex-col">
           {/* Full Name */}
           <Form.Item
             validateStatus={errors.name ? "error" : ""}
