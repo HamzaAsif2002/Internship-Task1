@@ -23,9 +23,27 @@ export const PreviewForm = () => {
   };
 
   //handle submitButton.
-  const handleConfirm = () => {
-    // simulate form submission
-    setSubmitted(true);
+  // inside handleConfirm in PreviewForm component
+  const handleConfirm = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/forms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setSubmitted(true);
+        resetForm();
+        console.log("Saved to backend:", data.data);
+      } else {
+        console.error("Failed to save:", data);
+        // show user-friendly error
+      }
+    } catch (err) {
+      console.error("Network error:", err);
+    }
   };
 
   return (
