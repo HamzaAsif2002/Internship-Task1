@@ -1,6 +1,9 @@
 import { PlusCircle, RefreshCcw, VenusAndMars } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { ShowData } from "./ShowData";
+import { SelectedForm } from "./SelectedForm";
+import { EditingData } from "./EditingData";
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -10,8 +13,6 @@ export const Home = () => {
   const [selectedForm, setSelectedForm] = useState(null);
 
   const BASE_URL = "http://localhost:5000";
-
-  // change baseUrl via env var in production if needed
 
   useEffect(() => {
     let mounted = true;
@@ -42,12 +43,115 @@ export const Home = () => {
     };
   }, [BASE_URL]);
 
+  //Delete Method
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this entry? This cannot be undone."
+    );
+    if (!confirmDelete) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const res = await fetch(`${BASE_URL}/api/forms/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || "Failed to delete");
+        return;
+      }
+      setForms((cur) => cur.filter((f) => f._id !== id));
+    } catch (err) {
+      console.error("Delete error:", err);
+      setError("Network error: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // handle Put Method
+  const [editingData, setEditingData] = useState(null);
+  const [editSaving, setEditSaving] = useState(false);
+
+  // When user clicks Edit (e.g., edit button per card) call this:
+  const openEditModal = (form) => {
+    // clone to avoid mutating original object directly
+    setEditingData({
+      _id: form._id,
+      name: form.name || "",
+      email: form.email || "",
+      password: form.password || "",
+      about: form.about || "",
+      gender: form.gender || "",
+      country: form.country || "",
+      city: form.city || "",
+    });
+  };
+
+  // handle field changes
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditingData((s) => ({ ...s, [name]: value }));
+  };
+
+  // call API to update
+  const submitEdit = async (e) => {
+    e.preventDefault();
+    if (!editingData || !editingData._id) return;
+    setEditSaving(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/forms/${editingData._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editingData.name,
+          email: editingData.email,
+          password: editingData.password,
+          about: editingData.about,
+          gender: editingData.gender,
+          country: editingData.country,
+          city: editingData.city,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Failed to update");
+        return;
+      }
+
+      // update local forms state with returned updated document
+      setForms((cur) =>
+        cur.map((f) => (f._id === data.data._id ? data.data : f))
+      );
+
+      // close modal
+      setEditingData(null);
+    } catch (err) {
+      console.error("Update error:", err);
+      setError("Network error: " + err.message);
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
+  // close without saving
+  const cancelEdit = () => {
+    setEditingData(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-indigo-50 to-rose-50 p-6">
       <main className="w-[80%] justify-center items-center m-auto">
         <div className="flex items-center justify-center mb-4">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-sky-500 bg-clip-text text-transparent">
               Multi-Step Registration
             </h1>
             <p className="mt-1 text-sm text-slate-600">
@@ -119,130 +223,32 @@ export const Home = () => {
           </div>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm p-5 border border-transparent ">
-          {loading ? (
-            <div className="py-14 text-center text-slate-500">Loading…</div>
-          ) : error ? (
-            <div className="py-10 text-center text-red-600">{error}</div>
-          ) : forms.length === 0 ? (
-            <div className="py-12 text-center text-slate-600">
-              No form data found.
-            </div>
-          ) : (
-            <div className="space-y-4 grid grid-cols-1 lg:grid-cols-3 gap-5">
-              {forms.map((form) => (
-                <article
-                  key={form._id}
-                  className="h-[200px] group relative flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-xl border hover:shadow-md transition bg-white"
-                >
-                  {/* Avatar / initials */}
-                  <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-lg bg-indigo-50 text-indigo-700 font-semibold text-lg">
-                    {(form.name && form.name[0]?.toUpperCase()) || "U"}
-                  </div>
-
-                  {/* Main info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="truncate">
-                        <h3 className="text-lg font-semibold text-slate-900 truncate">
-                          {form.name || "—"}
-                        </h3>
-                      </div>
-                    </div>
-
-                    <div className="mt-3 flex flex-col gap-2 text-sm text-slate-700 ">
-                      <p className="truncate">
-                        <span className="font-medium text-slate-800">
-                          City:
-                        </span>{" "}
-                        {form.city || "—"}
-                      </p>
-                      <p className="truncate">
-                        <span className="font-medium text-slate-800">
-                          Country:
-                        </span>{" "}
-                        {form.country || "—"}
-                      </p>
-                      <p className="truncate">
-                        <span className="font-medium text-slate-800">
-                          Gender:
-                        </span>{" "}
-                        {form.gender || "—"}
-                      </p>
-                      <p className="sm:col-span-2 break-words">
-                        <span className="font-medium text-slate-800">
-                          About:
-                        </span>{" "}
-                        <span className="text-slate-700 whitespace-pre-wrap">
-                          {form.about.length > 10
-                            ? form.about.slice(0, 10) + "..."
-                            : form.about}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Action placeholder (visual only) */}
-                  <div className="flex-shrink-0 ml-auto sm:ml-0">
-                    <button
-                      onClick={() => setSelectedForm(form)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-sm px-3 py-1 rounded-full border bg-slate-50 hover:bg-slate-100"
-                      title="View (UI-only)"
-                    >
-                      View
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Show data Component */}
+        <ShowData
+          forms={forms}
+          loading={loading}
+          error={error}
+          setSelectedForm={setSelectedForm}
+          handleDelete={handleDelete}
+          openEditModal={openEditModal}
+        />
       </main>
+      {/* show full data when user click on view option */}
       {selectedForm && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-2xl w-[90%] sm:w-[400px] p-6 relative">
-            <button
-              onClick={() => setSelectedForm(null)} // close modal
-              className="absolute top-3 right-3 text-slate-500 hover:text-slate-700 text-lg"
-            >
-              ✕
-            </button>
-
-            <h2 className="text-xl font-bold mb-4 text-slate-800">
-              {selectedForm.name}'s Details
-            </h2>
-
-            <div className="space-y-2 text-sm text-slate-700">
-              <p>
-                <strong>Email:</strong> {selectedForm.email}
-              </p>
-              <p>
-                <strong>Password:</strong> {selectedForm.password}
-              </p>
-              <p>
-                <strong>Gender:</strong> {selectedForm.gender}
-              </p>
-              <p>
-                <strong>Country:</strong> {selectedForm.country}
-              </p>
-              <p>
-                <strong>City:</strong> {selectedForm.city}
-              </p>
-              <p>
-                <strong>About:</strong> {selectedForm.about}
-              </p>
-            </div>
-
-            <div className="mt-6 text-right">
-              <button
-                onClick={() => setSelectedForm(null)}
-                className="px-4 py-2 text-sm rounded-full bg-indigo-600 text-white hover:bg-indigo-700"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
+        <SelectedForm
+          setSelectedForm={setSelectedForm}
+          selectedForm={selectedForm}
+        />
+      )}
+      {/* show Edit page when user click on edit option */}
+      {editingData && (
+        <EditingData
+          cancelEdit={cancelEdit}
+          submitEdit={submitEdit}
+          editingData={editingData}
+          handleEditChange={handleEditChange}
+          editSaving={editSaving}
+        />
       )}
     </div>
   );
