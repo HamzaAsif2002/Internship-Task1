@@ -1,11 +1,19 @@
-import { PlusCircle, RefreshCcw, VenusAndMars } from "lucide-react";
+import {
+  PlusCircle,
+  RefreshCcw,
+  VenusAndMars,
+  LogOut,
+  LogIn,
+} from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
 import { ShowData } from "./ShowData";
 import { SelectedForm } from "./SelectedForm";
 import { EditingData } from "./EditingData";
 
 export const Home = () => {
+  const { isAuthenticated, setIsAuthenticated } = useOutletContext();
+
   const navigate = useNavigate();
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,6 +84,25 @@ export const Home = () => {
   // handle Put Method
   const [editingData, setEditingData] = useState(null);
   const [editSaving, setEditSaving] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/logout", {
+        method: "POST",
+        credentials: "include", // includes the refreshToken cookie
+      });
+
+      if (res.ok) {
+        localStorage.removeItem("accessToken");
+        alert("LogOut Sececcfully");
+        setIsAuthenticated(false);
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
   // When user clicks Edit (e.g., edit button per card) call this:
   const openEditModal = (form) => {
@@ -159,67 +186,55 @@ export const Home = () => {
             </p>
           </div>
         </div>
-        <div className="flex items-center justify-between mb-4">
-          <div className="mt-8">
-            <div className="w-full px-5 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-sky-500 text-white font-semibold shadow-md flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <VenusAndMars size={18} />
-                <select
-                  name="gender"
-                  id="gender"
-                  className="bg-transparent text-white font-medium outline-none appearance-none cursor-pointer"
-                >
-                  <option value="select" className="text-slate-800">
-                    Select Gender
-                  </option>
-                  <option value="male" className="text-slate-800">
-                    Male
-                  </option>
-                  <option value="female" className="text-slate-800">
-                    Female
-                  </option>
-                  <option value="others" className="text-slate-800">
-                    Others
-                  </option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8">
-            <div className="flex items-center bg-gradient-to-r from-indigo-600 to-sky-500 rounded-full shadow-md">
-              <input
-                type="text"
-                placeholder="Search by country..."
-                className="w-full px-5 py-3 bg-transparent text-white placeholder-white placeholder-opacity-80 font-medium rounded-full outline-none"
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate("/page1")}
-              className="flex gap-2 w-full px-5 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-sky-500 text-white font-semibold shadow-md hover:shadow-lg transform transition hover:-translate-y-0.5"
-            >
-              <PlusCircle size={20} />
-              <p>Add</p>
-            </button>
-            <button
-              onClick={() => {
-                setLoading(true);
-                setError(null);
-                fetch(`${BASE_URL}/api/forms`)
-                  .then((r) => r.json())
-                  .then((d) => {
-                    if (d.success) setForms(d.data || []);
-                    else setError(d.message || "Failed to fetch");
-                  })
-                  .catch((e) => setError("Network error: " + e.message))
-                  .finally(() => setLoading(false));
-              }}
-              className="flex gap-2 w-full px-5 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-sky-500 text-white font-semibold shadow-md hover:shadow-lg transform transition hover:-translate-y-0.5"
-            >
-              <RefreshCcw size={20} />
-              <p>Refresh</p>
-            </button>
+        <div className="flex flex-col items-center justify-between mb-4 sm:flex-row gap-5 ">
+          <button
+            title={!isAuthenticated ? "Please log in to continue" : ""}
+            onClick={() => navigate("/page1")}
+            disabled={!isAuthenticated}
+            className={`flex gap-2 w-fit px-5 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-sky-500 text-white font-semibold shadow-md hover:shadow-lg transform transition hover:-translate-y-0.5 ${
+              !isAuthenticated ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            <PlusCircle size={20} />
+            <p>Add</p>
+          </button>
+
+          <button
+            onClick={() => {
+              setLoading(true);
+              setError(null);
+              fetch(`${BASE_URL}/api/forms`)
+                .then((r) => r.json())
+                .then((d) => {
+                  if (d.success) setForms(d.data || []);
+                  else setError(d.message || "Failed to fetch");
+                })
+                .catch((e) => setError("Network error: " + e.message))
+                .finally(() => setLoading(false));
+            }}
+            className="flex gap-2 w-fit px-5 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-sky-500 text-white font-semibold shadow-md hover:shadow-lg transform transition hover:-translate-y-0.5"
+          >
+            <RefreshCcw size={20} />
+            <p>Refresh</p>
+          </button>
+          <div>
+            {isAuthenticated ? (
+              <button
+                onClick={handleLogout}
+                className="flex gap-2 w-fit px-5 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-sky-500 text-white font-semibold shadow-md hover:shadow-lg transform transition hover:-translate-y-0.5"
+              >
+                <LogOut size={20} />
+                <p>Logout</p>
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate("/login")}
+                className="flex gap-2 w-full px-5 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-sky-500 text-white font-semibold shadow-md hover:shadow-lg transform transition hover:-translate-y-0.5"
+              >
+                <LogIn size={20} />
+                <p>Login</p>
+              </button>
+            )}
           </div>
         </div>
 
@@ -231,6 +246,7 @@ export const Home = () => {
           setSelectedForm={setSelectedForm}
           handleDelete={handleDelete}
           openEditModal={openEditModal}
+          isAuthenticated={isAuthenticated}
         />
       </main>
       {/* show full data when user click on view option */}
